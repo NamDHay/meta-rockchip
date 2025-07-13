@@ -8,4 +8,4 @@ SERIAL_CONSOLES ?= "115200;ttyFIQ0"
 
 RK_SOC_FAMILY := "rk3506"
 
-KBUILD_DEFCONFIG := "rk3506_defconfig"
+KBUILD_DEFCONFIG := "rk3506_luckfox_defconfig"
