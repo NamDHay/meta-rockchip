@@ -18,10 +18,10 @@ PV = "2017.09"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=a2c678cfd4a4d97135585cad908541c6"
 
 SRCREV = "a93658f8f45dc0266be21840931131b10c325e03"
-SRCREV_rkbin = "c41b714cacd249e3ef69b2bbe774da5095eefd72"
+SRCREV_rkbin = "${AUTOREV}"
 SRC_URI = " \
 	git://github.com/JeffyCN/mirrors.git;protocol=https;branch=u-boot; \
-	git://github.com/JeffyCN/mirrors.git;protocol=https;branch=rkbin;name=rkbin;destsuffix=rkbin; \
+	git://github.com/NamDHay/rkbin.git;protocol=https;branch=main;name=rkbin;destsuffix=rkbin; \
 "
 
 SRCREV_FORMAT = "default_rkbin"

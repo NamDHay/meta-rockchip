@@ -1,12 +1,13 @@
-From 8bdbbf6c51e81c37bcd7b260886bcf558fae7159 Mon Sep 17 00:00:00 2001
+From a64b99adb02f421460e51f093cab708b0fabcfce Mon Sep 17 00:00:00 2001
 From: NamDHay <nguyennamhuy2003@gmail.com>
-Date: Wed, 16 Jul 2025 00:13:15 +0700
-Subject: [PATCH] Add support for RK3506 SoC and Luckfox Lyra board
+Date: Thu, 17 Jul 2025 11:38:35 +0700
+Subject: [PATCH] Add RK3506 SoC and EVB board support
 
-- Add DTS and board config files for RK3506
-- Add rk3506_luckfox_defconfig
-- Add pinctrl, cru, grf headers
-- Update Kconfig and Makefile for RK3506 integration
+- Add DTS files for RK3506 and various EVB/Luckfox variants
+- Add pinctrl, CRU, GRF, IOC headers
+- Add RAM init driver (sdram_rk3506.c)
+- Add configs for EVB, AMP, TB, Luckfox boards
+- Update Kconfig, Makefile for RK3506 integration
 ---
  arch/arm/dts/rk3506-evb-tb.dts                |    12 +
  arch/arm/dts/rk3506-evb.dts                   |    31 +
@@ -34,11 +35,13 @@ Subject: [PATCH] Add support for RK3506 SoC and Luckfox Lyra board
  configs/rk3506_tb.config                      |    12 +
  configs/rk3506b.config                        |     2 +
  configs/rk3506b_luckfox.config                |     2 +
+ drivers/ram/rockchip/Makefile                 |     1 +
+ drivers/ram/rockchip/sdram_rk3506.c           |    21 +
  include/configs/evb_rk3506.h                  |    26 +
  include/configs/rk3506_common.h               |    92 +
  .../dt-bindings/clock/rockchip,rk3506-cru.h   |   489 +
  include/irq-platform.h                        |    51 +
- 30 files changed, 18323 insertions(+)
+ 32 files changed, 18345 insertions(+)
  create mode 100644 arch/arm/dts/rk3506-evb-tb.dts
  create mode 100644 arch/arm/dts/rk3506-evb.dts
  create mode 100644 arch/arm/dts/rk3506-luckfox.dts
@@ -63,6 +66,7 @@ Subject: [PATCH] Add support for RK3506 SoC and Luckfox Lyra board
  create mode 100644 configs/rk3506_tb.config
  create mode 100644 configs/rk3506b.config
  create mode 100644 configs/rk3506b_luckfox.config
+ create mode 100644 drivers/ram/rockchip/sdram_rk3506.c
  create mode 100644 include/configs/evb_rk3506.h
  create mode 100644 include/configs/rk3506_common.h
  create mode 100644 include/dt-bindings/clock/rockchip,rk3506-cru.h
@@ -17925,6 +17929,45 @@ index 000000000000..b9501fe931d3
 @@ -0,0 +1,2 @@
 +CONFIG_BASE_DEFCONFIG="rk3506_luckfox_defconfig"
 +CONFIG_LOADER_INI="RK3506BMINIALL.ini"
+diff --git a/drivers/ram/rockchip/Makefile b/drivers/ram/rockchip/Makefile
+index 5532a805c04e..e5eb4143640d 100644
+--- a/drivers/ram/rockchip/Makefile
++++ b/drivers/ram/rockchip/Makefile
+@@ -17,6 +17,7 @@ obj-$(CONFIG_ROCKCHIP_RK3308) += sdram_rv1108_pctl_phy.o sdram_rk3308.o
+ obj-$(CONFIG_ROCKCHIP_RK3328) += sdram_rk3328.o sdram_pctl_px30.o sdram_phy_px30.o
+ obj-$(CONFIG_ROCKCHIP_RK3399) += sdram_rk3399.o
+ obj-$(CONFIG_ROCKCHIP_RK3528) += sdram_rk3528.o
++obj-$(CONFIG_ROCKCHIP_RK3506) += sdram_rk3506.o
+ obj-$(CONFIG_ROCKCHIP_RK3562) += sdram_rk3562.o
+ obj-$(CONFIG_ROCKCHIP_RK3568) += sdram_rk3568.o
+ obj-$(CONFIG_ROCKCHIP_RK3588) += sdram_rk3588.o
+diff --git a/drivers/ram/rockchip/sdram_rk3506.c b/drivers/ram/rockchip/sdram_rk3506.c
+new file mode 100644
+index 000000000000..19c0ad64c014
+--- /dev/null
++++ b/drivers/ram/rockchip/sdram_rk3506.c
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * (C) Copyright 2024 Rockchip Electronics Co., Ltd.
++ */
++
++#include <common.h>
++
++#ifdef CONFIG_TPL_BUILD
++#ifndef CONFIG_TPL_TINY_FRAMEWORK
++#error please defined CONFIG_TPL_TINY_FRAMEWORK for RK3506 !!!
++#endif
++#endif
++
++#ifdef CONFIG_TPL_BUILD
++
++/* return: 0 = success, other = fail */
++int sdram_init(void)
++{
++	return (-1);
++}
++#endif /* CONFIG_TPL_BUILD */
 diff --git a/include/configs/evb_rk3506.h b/include/configs/evb_rk3506.h
 new file mode 100644
 index 000000000000..3fcbf9d73829
